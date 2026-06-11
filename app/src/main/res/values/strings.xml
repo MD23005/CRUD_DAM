@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CRUDApplication</string>
+    <string name="app_name">Alquileres UES</string>
     <string name="home_dashboard">Dashboard</string>
     <string name="txtView_Clientes">CLIENTES</string>
     <string name="txtView_AutosAlq">AUTOS ALQUILADOS</string>

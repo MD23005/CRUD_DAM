@@ -17,7 +17,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_nav_menu" />
+        android:background="#1A2332"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/secondary"
+        app:itemTextColor="@color/secondary"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <!-- Botón flotante + -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

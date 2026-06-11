@@ -1,5 +1,6 @@
 package com.example.crudapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,8 +30,13 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
     ActivityResultLauncher<String> seleccionarImagenLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
+                    // Mantiene imagen al cerrar  y abrir app
+                    getContentResolver().takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    );
                     imgFoto.setImageURI(uri);
-                    rutaFoto = uri.toString(); // guarda la ruta como texto
+                    rutaFoto = uri.toString(); // guarda el String en BD
                 }
             });
 
