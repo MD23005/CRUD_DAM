@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_vehiculos"
+        android:icon="@drawable/ic_image"
+        android:title="VEHICULOS" />
+    <item
+        android:id="@+id/nav_clientes"
+        android:icon="@drawable/ic_clientes"
+        android:title="CLIENTES" />
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="HOME" />
+    <item
+        android:id="@+id/nav_editar"
+        android:icon="@drawable/ic_edit"
+        android:title="Editar" />
+    <item
+        android:id="@+id/nav_calendario"
+        android:icon="@drawable/ic_calendar"
+        android:title="Calendario" />
+</menu>

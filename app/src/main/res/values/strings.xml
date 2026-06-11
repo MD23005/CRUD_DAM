@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CRUDApplication</string>
+    <string name="home_dashboard">Dashboard</string>
+    <string name="txtView_Clientes">CLIENTES</string>
+    <string name="txtView_AutosAlq">AUTOS ALQUILADOS</string>
+    <string name="txtView_Autos">AUTOS REGISTRADOS</string>
+    <string name="txtAccesos">Accesos rápidos</string>
+</resources>

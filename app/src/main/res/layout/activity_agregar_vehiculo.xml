@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nuevo Vehículo"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Foto -->
+        <ImageView
+            android:id="@+id/imgFoto"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:background="#DDDDDD"
+            android:src="@drawable/ic_launcher_background"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnSeleccionarFoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar Foto"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Marca -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Marca"/>
+        <EditText
+            android:id="@+id/etMarca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: Toyota"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Modelo -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Modelo"/>
+        <EditText
+            android:id="@+id/etModelo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: Corolla"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Año -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Año"/>
+        <EditText
+            android:id="@+id/etAño"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: 2022"
+            android:inputType="number"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Placa -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Placa"/>
+        <EditText
+            android:id="@+id/etPlaca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: P-123456"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Tipo de vehículo -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tipo de vehículo"/>
+        <Spinner
+            android:id="@+id/spinnerTipoVehiculo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Precio -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Precio"/>
+        <EditText
+            android:id="@+id/etPrecio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: $25"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Estado -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tipo de vehículo"/>
+        <Spinner
+            android:id="@+id/spinnerEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Botón guardar -->
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Vehículo"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"/>
+        <Button
+            android:id="@+id/btnCancelar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+</ScrollView>
