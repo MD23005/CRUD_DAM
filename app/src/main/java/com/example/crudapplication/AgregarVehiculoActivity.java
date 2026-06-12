@@ -43,7 +43,7 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_agregar_vehiculo);
+        setContentView(R.layout.dialog_agregar_vehiculo);
 
         db = AppDB.getInstance(this);
 
