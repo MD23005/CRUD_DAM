@@ -34,13 +34,13 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new HomeFragment();
             } else if (itemId == R.id.nav_vehiculos) {
                 selectedFragment = new VehiculosFragment();
+            } else if (itemId == R.id.nav_alquilar) {
+                selectedFragment = new AlquilarFragment();
             }
 
             /*else if (itemId == R.id.nav_clientes) {
                 selectedFragment = new ClientesFragment();
-            }  else if (itemId == R.id.nav_alquileres) {
-                selectedFragment = new AlquileresFragment();
-            }*/
+            }  */
 
             if (selectedFragment != null) {
                 reemplazarFragmento(selectedFragment);

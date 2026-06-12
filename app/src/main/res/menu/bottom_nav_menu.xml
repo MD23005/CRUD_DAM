@@ -12,11 +12,7 @@
         android:icon="@drawable/ic_home"
         android:title="HOME" />
     <item
-        android:id="@+id/nav_editar"
-        android:icon="@drawable/ic_edit"
-        android:title="Editar" />
-    <item
-        android:id="@+id/nav_calendario"
-        android:icon="@drawable/ic_calendar"
-        android:title="Calendario" />
+        android:id="@+id/nav_alquilar"
+        android:icon="@drawable/baseline_event_note_24"
+        android:title="ALQUILERES" />
 </menu>
