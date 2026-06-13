@@ -36,11 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new VehiculosFragment();
             } else if (itemId == R.id.nav_alquilar) {
                 selectedFragment = new AlquilarFragment();
-            }
-
-            /*else if (itemId == R.id.nav_clientes) {
+            } else if (itemId == R.id.nav_clientes) {
                 selectedFragment = new ClientesFragment();
-            }  */
+            }
 
             if (selectedFragment != null) {
                 reemplazarFragmento(selectedFragment);
