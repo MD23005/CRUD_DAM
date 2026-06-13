@@ -88,37 +88,54 @@ public class ClientesFragment extends Fragment {
                             // Eliminar
                             (cliente, position) -> {
 
-                                new AlertDialog.Builder(requireContext())
-                                        .setTitle("Eliminar Cliente")
-                                        .setMessage("¿Eliminar a " + cliente.nombre + "?")
+                                // 1. Primero consultamos a la base de datos en segundo plano
+                                new Thread(() -> {
+                                    // Contamos los alquileres asociados al ID del cliente
+                                    int alquileresActivos = db.clienteDAO().contarAlquileresDeCliente(cliente.getID_Cliente());
 
-                                        .setPositiveButton("Eliminar",
-                                                (dialog, which) -> {
+                                    // 2. Regresamos al hilo principal para decidir qué Alert de confirmación mostrar
+                                    if (getActivity() != null) {
+                                        getActivity().runOnUiThread(() -> {
 
-                                                    new Thread(() -> {
+                                            if (alquileresActivos > 0) {
+                                                // BLOQUEO: Tiene registros vinculados, no se puede borrar
+                                                new AlertDialog.Builder(requireContext())
+                                                        .setTitle("No se puede eliminar")
+                                                        .setMessage("Este cliente está asociado a " + alquileresActivos + " registro(s) de alquiler. Elimina primero su historial de alquileres para no romper el sistema.")
+                                                        .setPositiveButton("Aceptar", null)
+                                                        .show();
 
-                                                        db.clienteDAO().deleteCliente(cliente);
+                                            } else {
+                                                // SEGURO: el cliente no está asignado a ningún alquiler
+                                                new AlertDialog.Builder(requireContext())
+                                                        .setTitle("Eliminar Cliente")
+                                                        .setMessage("¿Eliminar a " + cliente.getNombre() + "?") // (Ajusté a getNombre() por si usas getter)
+                                                        .setPositiveButton("Eliminar", (dialog, which) -> {
 
-                                                        if (getActivity() != null) {
+                                                            new Thread(() -> {
+                                                                db.clienteDAO().deleteCliente(cliente);
 
-                                                            getActivity().runOnUiThread(() -> {
+                                                                if (getActivity() != null) {
+                                                                    getActivity().runOnUiThread(() -> {
+                                                                        lista.remove(position);
+                                                                        adapter.notifyItemRemoved(position);
 
-                                                                lista.remove(position);
-                                                                adapter.notifyItemRemoved(position);
+                                                                        Toast.makeText(
+                                                                                getContext(),
+                                                                                "Cliente eliminado",
+                                                                                Toast.LENGTH_SHORT
+                                                                        ).show();
+                                                                    });
+                                                                }
+                                                            }).start();
+                                                        })
+                                                        .setNegativeButton("Cancelar", null)
+                                                        .show();
+                                            }
 
-                                                                Toast.makeText(
-                                                                        getContext(),
-                                                                        "Cliente eliminado",
-                                                                        Toast.LENGTH_SHORT
-                                                                ).show();
-                                                            });
-                                                        }
-
-                                                    }).start();
-                                                })
-
-                                        .setNegativeButton("Cancelar", null)
-                                        .show();
+                                        });
+                                    }
+                                }).start();
                             },
 
                             // Editar

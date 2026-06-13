@@ -6,6 +6,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity(
         tableName = "AlquilarVehiculo",
         foreignKeys = {
@@ -15,19 +17,19 @@ import androidx.room.PrimaryKey;
                         childColumns = "ID_Auto",
                         onDelete = ForeignKey.RESTRICT
                 ),
-                /*@ForeignKey(
+                @ForeignKey(
                         entity = Cliente.class,
                         parentColumns = "ID_Cliente",
                         childColumns = "ID_Cliente",
-                        onDelete = ForeignKey.CASCADE
-                )*/
+                        onDelete = ForeignKey.RESTRICT
+                )
         },
         indices = {
                 @Index(value = "ID_Auto"),
                 @Index(value = "ID_Cliente")
         }
 )
-public class AlquilarVehiculo {
+public class AlquilarVehiculo implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     public int ID_Alquiler;

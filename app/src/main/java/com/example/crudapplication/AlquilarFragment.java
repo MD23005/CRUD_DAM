@@ -13,12 +13,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.crudapplication.adapters.AlquilerAdapter;
+import com.example.crudapplication.AgregarAlquilerDialog;
 import com.example.crudapplication.data.AppDB;
 import com.example.crudapplication.entities.AlquilarVehiculo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.crudapplication.dao.AlquilerDAO;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executors;
 
 public class AlquilarFragment extends Fragment {
 
@@ -38,7 +43,7 @@ public class AlquilarFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // Recarga los registros de la base de datos de manera asíncrona cada vez que se visualiza la sección
-        cargarAlquileres();
+        verificarYLiberarVehiculos();
     }
 
     @Nullable
@@ -55,17 +60,29 @@ public class AlquilarFragment extends Fragment {
         recyclerAlquileres.setLayoutManager(new LinearLayoutManager(getContext()));
 
         fabAgregarAlquiler.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Próximamente: Diálogo nuevo alquiler", Toast.LENGTH_SHORT).show();
-            // Aquí mandaremos a llamar al DialogFragment de inserción
+            AgregarAlquilerDialog dialogo = new AgregarAlquilerDialog();
+            dialogo.show(getParentFragmentManager(), "AgregarAlquiler");
         });
 
         return vista;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getParentFragmentManager().setFragmentResultListener("solicitudAlquiler", getViewLifecycleOwner(), (requestKey, result) -> {
+            boolean guardado = result.getBoolean("alquilerGuardado");
+            if (guardado) {
+                verificarYLiberarVehiculos();
+            }
+        });
+    }
+
     private void cargarAlquileres() {
         new Thread(() -> {
             // Consultamos todos los alquileres almacenados en la base de datos
-            lista = db.alquilerDAO().obtenerTodos(); // Asegúrate de que tu DAO tenga este método
+            lista = db.alquilerDAO().obtenerTodos();
 
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
@@ -77,5 +94,22 @@ public class AlquilarFragment extends Fragment {
                 });
             }
         }).start();
+    }
+
+    private void verificarYLiberarVehiculos() {
+        // 1. Obtener la fecha de hoy en formato AAAA-MM-DD
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String fechaHoy = sdf.format(new Date());
+
+        // 2. Ejecutar la actualización inteligente en segundo plano
+        Executors.newSingleThreadExecutor().execute(() -> {
+
+            db.vehiculoDAO().actualizarEstadosVehiculos(fechaHoy);
+
+            // 3. Una vez regularizados los estados en la BD, refrescamos la lista en la UI
+            requireActivity().runOnUiThread(() -> {
+                cargarAlquileres();
+            });
+        });
     }
 }
