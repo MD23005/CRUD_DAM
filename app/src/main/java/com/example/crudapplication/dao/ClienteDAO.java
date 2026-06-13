@@ -27,4 +27,7 @@ public interface ClienteDAO {
 
     @Query("SELECT * FROM Cliente WHERE ID_Cliente = :id")
     Cliente getClienteById(int id);
+
+    @Query("SELECT COUNT(*) FROM AlquilarVehiculo WHERE ID_Cliente = :idCliente")
+    int contarAlquileresDeCliente(int idCliente);
 }

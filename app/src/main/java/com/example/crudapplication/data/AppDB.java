@@ -13,7 +13,7 @@ import com.example.crudapplication.entities.AlquilarVehiculo;
 import com.example.crudapplication.entities.Cliente;
 import com.example.crudapplication.entities.Vehiculo;
 
-@Database(entities ={Vehiculo.class, AlquilarVehiculo.class, Cliente.class},version =2)
+@Database(entities ={Vehiculo.class, AlquilarVehiculo.class, Cliente.class},version = 7)
 public abstract class AppDB
         extends RoomDatabase {
     private static AppDB instancia;
@@ -28,7 +28,6 @@ public abstract class AppDB
                                     AppDB.class,
                                     "db_alquileres"
                             )
-                            .fallbackToDestructiveMigration()
                             .build();
         }
         return instancia;
