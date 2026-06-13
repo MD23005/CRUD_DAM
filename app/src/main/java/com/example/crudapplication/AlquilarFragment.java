@@ -28,10 +28,10 @@ public class AlquilarFragment extends Fragment {
     private AlquilerAdapter adapter;
     private List<AlquilarVehiculo> lista;
 
-    // Aquí irá tu adaptador una vez lo crees, ej: AlquilerAdapter adapter;
+
 
     public AlquilarFragment() {
-        // Constructor público vacío obligatorio
+
     }
 
     @Override

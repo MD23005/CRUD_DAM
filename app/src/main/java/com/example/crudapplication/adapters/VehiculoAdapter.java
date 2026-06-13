@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.example.crudapplication.R;
 import com.example.crudapplication.entities.Vehiculo;
@@ -23,12 +21,14 @@ public class VehiculoAdapter  extends
     private Context miContext;
     final private clickLista miClick;
     final private clickEliminar miEliminar;
+    final private clickEditar miEditar;
     public VehiculoAdapter(List<Vehiculo> lista, Context context, clickLista
-            listener, clickEliminar miEliminar) {
+            listener, clickEliminar miEliminar, clickEditar miEditar) {
         this.lista = lista;
         miContext = context;
         miClick = listener;
         this.miEliminar = miEliminar;
+        this.miEditar=miEditar;
     }
 
     @NonNull
@@ -77,7 +77,7 @@ public class VehiculoAdapter  extends
             implements View.OnClickListener {
         TextView marca, modelo, año, placa, tipo_vehiculo, precio, estado;
         ImageView foto;
-        ImageButton btnEliminar;
+        ImageButton btnEliminar,btnEditar;
 
 
         public TareaViewHolder(@NonNull View itemView) {
@@ -97,6 +97,13 @@ public class VehiculoAdapter  extends
                 Vehiculo vehiculo = lista.get(pos);
                 miEliminar.onEliminar(vehiculo, pos);
             });
+            btnEditar = itemView.findViewById(R.id.btnEditar);
+            btnEditar.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                Vehiculo vehiculo = lista.get(pos);
+                miEditar.onEditar(vehiculo);
+            });
+
         }
 
         @Override
@@ -122,5 +129,8 @@ public class VehiculoAdapter  extends
     }
     public interface clickEliminar {
         void onEliminar(Vehiculo vehiculo, int position);
+    }
+    public interface clickEditar {
+        void onEditar(Vehiculo vehiculo);
     }
 }

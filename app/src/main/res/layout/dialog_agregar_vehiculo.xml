@@ -81,6 +81,8 @@
         android:id="@+id/spinnerTipoVehiculo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textColorHint="#4F5A6D"
         android:layout_marginBottom="12dp"/>
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Precio por Día" android:textColor="#5A677C"/>

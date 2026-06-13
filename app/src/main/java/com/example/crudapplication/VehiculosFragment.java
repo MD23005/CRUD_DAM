@@ -1,6 +1,5 @@
 package com.example.crudapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,40 +27,30 @@ public class VehiculosFragment extends Fragment {
     AppDB db;
     List<Vehiculo> lista;
 
-    // Constructor público vacío obligatorio
-    public VehiculosFragment() {
-    }
+    public VehiculosFragment() {}
 
     @Override
     public void onResume() {
         super.onResume();
-        // Sigue cargando los vehículos cada vez que el fragmento vuelve a ser visible
         cargarVehiculos();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // 1. Inflamos el diseño que modificamos anteriormente
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         View vista = inflater.inflate(R.layout.fragment_vehiculos, container, false);
 
-        // 2. Inicializamos la base de datos usando el contexto del fragmento
         db = AppDB.getInstance(requireContext());
 
-        // 3. Vinculamos y configuramos el RecyclerView usando "vista.findViewById"
         recyclerVehiculos = vista.findViewById(R.id.recyclerVehiculos);
         recyclerVehiculos.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // 4. Configuramos el FAB para abrir la actividad de agregar
         FloatingActionButton fabAgregar = vista.findViewById(R.id.fabAgregar);
         fabAgregar.setOnClickListener(v -> {
-            // 1. Instanciamos el diálogo y pasamos la acción para refrescar la lista al guardar
-            AgregarVehiculoDialog dialogo = new AgregarVehiculoDialog(() -> {
-                cargarVehiculos(); // Esto vuelve a leer Room y actualiza el RecyclerView
-            });
-
-            // 2. Mostramos el diálogo en pantalla
-            // Usamos getChildFragmentManager() porque estamos dentro de otro Fragmento
+            AgregarVehiculoDialog dialogo = new AgregarVehiculoDialog(() -> cargarVehiculos());
             dialogo.show(getChildFragmentManager(), "AgregarVehiculoDialog");
         });
 
@@ -72,20 +61,26 @@ public class VehiculosFragment extends Fragment {
         new Thread(() -> {
             lista = db.vehiculoDAO().obtenerTodos();
 
-            // Los fragmentos usan getActivity().runOnUiThread para tocar la interfaz desde otro hilo
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
-                    // Pasamos requireContext() en lugar de "this" para el adaptador
-                    adapter = new VehiculoAdapter(lista, requireContext(),
-                            // Click normal
+
+                    adapter = new VehiculoAdapter(
+                            lista,
+                            requireContext(),
+
+                            // Detalle
                             (marca, modelo, año, placa, tipo_vehiculo, precio, estado, foto) -> {
-                                Toast.makeText(getContext(), marca + " " + modelo, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(),
+                                        marca + " " + modelo,
+                                        Toast.LENGTH_SHORT).show();
                             },
-                            // Click eliminar
+
+                            // Eliminar
                             (vehiculo, position) -> {
                                 new AlertDialog.Builder(requireContext())
                                         .setTitle("Eliminar vehículo")
-                                        .setMessage("¿Eliminar " + vehiculo.marca + " " + vehiculo.modelo + "?")
+                                        .setMessage("¿Eliminar " + vehiculo.marca
+                                                + " " + vehiculo.modelo + "?")
                                         .setPositiveButton("Eliminar", (dialog, which) -> {
                                             new Thread(() -> {
                                                 db.vehiculoDAO().eliminar(vehiculo);
@@ -93,15 +88,27 @@ public class VehiculosFragment extends Fragment {
                                                     getActivity().runOnUiThread(() -> {
                                                         lista.remove(position);
                                                         adapter.notifyItemRemoved(position);
-                                                        Toast.makeText(getContext(), "Vehículo eliminado", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(getContext(),
+                                                                "Vehículo eliminado",
+                                                                Toast.LENGTH_SHORT).show();
                                                     });
                                                 }
                                             }).start();
                                         })
                                         .setNegativeButton("Cancelar", null)
                                         .show();
+                            },
+
+                           //Editar
+                            (vehiculo) -> {
+                                EditarVehiculoDialog dialogo = EditarVehiculoDialog.newInstance(
+                                        vehiculo,
+                                        () -> cargarVehiculos()
+                                );
+                                dialogo.show(getChildFragmentManager(), "EditarVehiculoDialog");
                             }
                     );
+
                     recyclerVehiculos.setAdapter(adapter);
                 });
             }
