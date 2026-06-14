@@ -5,26 +5,55 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView; // Ejemplo por si usas TextViews
+import android.widget.TextView;
 
-import com.example.crudapplication.R;
+import com.example.crudapplication.data.AppDB;
+
+import java.util.concurrent.Executors;
 
 public class HomeFragment extends Fragment {
 
-    // 1. El constructor público vacío es obligatorio para los fragmentos
-    public HomeFragment() {
-        // Requiere constructor vacío
-    }
+    private TextView tvAutos, tvClientes, tvAlquilados;
+
+    public HomeFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View vista = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView tvAutos = vista.findViewById(R.id.tv_autos_count);
-        tvAutos.setText("12"); // Ejemplo de uso
+        tvAutos      = vista.findViewById(R.id.tv_autos_count);
+        tvClientes   = vista.findViewById(R.id.tv_clientes_count);
+        tvAlquilados = vista.findViewById(R.id.tv_carros_alquilados);
 
+        cargarDatos();
         return vista;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarDatos();
+    }
+
+    private void cargarDatos() {
+        AppDB db = AppDB.getInstance(requireContext());
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            int totalAutos      = db.vehiculoDAO().obtenerTodos().size();
+            int totalClientes   = db.clienteDAO().getAllClientes().size();
+            int totalAlquilados = db.vehiculoDAO().contarAlquilados();
+
+            // Verificamos que el Fragment sigue activo antes de tocar la UI
+            if (isAdded() && getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (isAdded()) {
+                        tvAutos.setText(String.valueOf(totalAutos));
+                        tvClientes.setText(String.valueOf(totalClientes));
+                        tvAlquilados.setText(String.valueOf(totalAlquilados));
+                    }
+                });
+            }
+        });
     }
 }
