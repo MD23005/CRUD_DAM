@@ -31,6 +31,8 @@ public interface VehiculoDAO {
     @Query("SELECT * FROM Vehiculo WHERE Placa = :placa LIMIT 1")
     Vehiculo buscarPorPlaca(String placa);
 
+    @Query("SELECT COUNT(*) FROM Vehiculo WHERE Estado = 'Alquilado'")
+    int contarAlquilados();
     @Query("SELECT * FROM Vehiculo WHERE Estado = 'Disponible'")
     List<Vehiculo> obtenerVehiculosDisponibles();
 
