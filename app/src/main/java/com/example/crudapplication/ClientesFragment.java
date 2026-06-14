@@ -20,12 +20,19 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import androidx.appcompat.widget.SearchView;
+
 public class ClientesFragment extends Fragment {
 
     RecyclerView recyclerClientes;
     ClienteAdapter adapter;
     AppDB db;
+
     List<Cliente> lista;
+    SearchView searchView;
+
 
     public ClientesFragment() {
     }
@@ -45,7 +52,47 @@ public class ClientesFragment extends Fragment {
         View vista = inflater.inflate(R.layout.fragment_clientes, container, false);
 
         db = AppDB.getInstance(requireContext());
+        searchView = vista.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String texto) {
+
+                new Thread(() -> {
+
+                    List<Cliente> clientesFiltrados;
+
+                    if (texto.trim().isEmpty()) {
+
+                        clientesFiltrados = db.clienteDAO().getAllClientes();
+
+                    } else {
+
+                        clientesFiltrados =
+                                db.clienteDAO().buscarClientes("%" + texto.trim() + "%");
+                    }
+
+                    if (getActivity() != null) {
+
+                        getActivity().runOnUiThread(() -> {
+
+                            if (adapter != null) {
+                                adapter.actualizarLista(clientesFiltrados);
+                            }
+
+                        });
+                    }
+
+                }).start();
+
+                return true;
+            }
+        });
         recyclerClientes = vista.findViewById(R.id.recyclerClientes);
         recyclerClientes.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -161,4 +208,8 @@ public class ClientesFragment extends Fragment {
 
         }).start();
     }
+
+
+
+
 }

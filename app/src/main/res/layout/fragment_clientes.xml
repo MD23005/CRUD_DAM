@@ -10,17 +10,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="25dp"
         android:text="Clientes"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="bold" />
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_titulo_alquileres"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="#1A2540"
+        app:iconifiedByDefault="false"
+        app:queryHint="Buscar por nombre, DUI, teléfono o correo"
+        app:queryBackground="@null" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerClientes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/searchView"
+        android:layout_marginTop="8dp"
         android:padding="8dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

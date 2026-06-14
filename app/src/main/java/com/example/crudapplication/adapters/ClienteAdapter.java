@@ -113,4 +113,9 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClienteV
     public interface clickEditar {
         void onEditar(Cliente cliente);
     }
+
+    public void actualizarLista(List<Cliente> clientes) {
+        this.lista = clientes;
+        notifyDataSetChanged();
+    }
 }
