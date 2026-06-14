@@ -28,6 +28,7 @@ public abstract class AppDB
                                     AppDB.class,
                                     "db_alquileres"
                             )
+                            .fallbackToDestructiveMigration()
                             .build();
         }
         return instancia;

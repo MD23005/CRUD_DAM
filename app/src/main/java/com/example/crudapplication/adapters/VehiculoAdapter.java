@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide;
 import com.example.crudapplication.R;
 import com.example.crudapplication.entities.Vehiculo;
 import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class VehiculoAdapter  extends
@@ -24,7 +26,8 @@ public class VehiculoAdapter  extends
     final private clickEditar miEditar;
     public VehiculoAdapter(List<Vehiculo> lista, Context context, clickLista
             listener, clickEliminar miEliminar, clickEditar miEditar) {
-        this.lista = lista;
+        this.lista = lista != null ? lista : new java.util.ArrayList<>();
+        this.listaCompleta = new ArrayList<>(lista);
         miContext = context;
         miClick = listener;
         this.miEliminar = miEliminar;
@@ -70,7 +73,7 @@ public class VehiculoAdapter  extends
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return lista != null ? lista.size() : 0;
     }
 
     public class TareaViewHolder extends RecyclerView.ViewHolder
@@ -133,4 +136,33 @@ public class VehiculoAdapter  extends
     public interface clickEditar {
         void onEditar(Vehiculo vehiculo);
     }
+
+    List<Vehiculo> listaCompleta; // ← nueva variable
+
+    public void filtrar(String texto) {
+        lista.clear();
+        if (texto.isEmpty()) {
+            lista.addAll(listaCompleta);
+        } else {
+            String filtro = texto.toLowerCase();
+            for (Vehiculo v : listaCompleta) {
+                if (v.marca.toLowerCase().contains(filtro) ||
+                        v.modelo.toLowerCase().contains(filtro) ||
+                        v.año.toLowerCase().contains(filtro) ||
+                        v.precio.toLowerCase().contains(filtro) ||
+                        v.estado.toLowerCase().contains(filtro) ||
+                        v.placa.toLowerCase().contains(filtro)) {
+                    lista.add(v);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void actualizarLista(List<Vehiculo> nuevaLista) {
+        this.lista = new ArrayList<>(nuevaLista);
+        this.listaCompleta = new ArrayList<>(nuevaLista);
+        notifyDataSetChanged();
+    }
+
 }
