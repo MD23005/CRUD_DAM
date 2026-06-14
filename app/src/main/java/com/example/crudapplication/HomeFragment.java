@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.crudapplication.data.AppDB;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.concurrent.Executors;
 
@@ -25,6 +26,21 @@ public class HomeFragment extends Fragment {
         tvAutos      = vista.findViewById(R.id.tv_autos_count);
         tvClientes   = vista.findViewById(R.id.tv_clientes_count);
         tvAlquilados = vista.findViewById(R.id.tv_carros_alquilados);
+
+        // Accesos rápidos
+        MaterialCardView cardVehiculos  = vista.findViewById(R.id.cardAccesoVehiculos);
+        MaterialCardView cardClientes   = vista.findViewById(R.id.cardAccesoClientes);
+        MaterialCardView cardAlquileres = vista.findViewById(R.id.cardAccesoAlquileres);
+
+        cardVehiculos.setOnClickListener(v ->
+                requireActivity().findViewById(R.id.nav_vehiculos).performClick()
+        );
+        cardClientes.setOnClickListener(v ->
+                requireActivity().findViewById(R.id.nav_clientes).performClick()
+        );
+        cardAlquileres.setOnClickListener(v ->
+                requireActivity().findViewById(R.id.nav_alquilar).performClick()
+        );
 
         cargarDatos();
         return vista;
@@ -44,7 +60,6 @@ public class HomeFragment extends Fragment {
             int totalClientes   = db.clienteDAO().getAllClientes().size();
             int totalAlquilados = db.vehiculoDAO().contarAlquilados();
 
-            // Verificamos que el Fragment sigue activo antes de tocar la UI
             if (isAdded() && getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     if (isAdded()) {
