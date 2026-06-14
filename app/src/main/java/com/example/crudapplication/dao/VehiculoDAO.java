@@ -33,4 +33,22 @@ public interface VehiculoDAO {
 
     @Query("SELECT COUNT(*) FROM Vehiculo WHERE Estado = 'Alquilado'")
     int contarAlquilados();
+    @Query("SELECT * FROM Vehiculo WHERE Estado = 'Disponible'")
+    List<Vehiculo> obtenerVehiculosDisponibles();
+
+    @Query("SELECT * FROM Vehiculo WHERE Estado = 'Disponible' OR ID_Auto = :idAutoActual")
+    List<Vehiculo> obtenerDisponiblesYActual(int idAutoActual);
+
+    @Query("UPDATE Vehiculo SET Estado = 'Disponible' WHERE ID_Auto IN (" +
+            "SELECT ID_Auto FROM AlquilarVehiculo WHERE Fecha_Fin < :fechaActual)")
+    void liberarVehiculosVencidos(String fechaActual);
+
+    @Query("UPDATE Vehiculo SET Estado = CASE " +
+            "WHEN ID_Auto IN (SELECT ID_Auto FROM AlquilarVehiculo WHERE :fechaActual BETWEEN Fecha_Inicio AND Fecha_Fin) THEN 'Alquilado' " +
+            "ELSE 'Disponible' " +
+            "END")
+    void actualizarEstadosVehiculos(String fechaActual);
+
+    @Query("SELECT COUNT(*) FROM AlquilarVehiculo WHERE ID_Auto = :idAuto")
+    int contarAlquileresDeVehiculo(int idAuto);
 }

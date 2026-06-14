@@ -77,26 +77,53 @@ public class VehiculosFragment extends Fragment {
 
                             // Eliminar
                             (vehiculo, position) -> {
-                                new AlertDialog.Builder(requireContext())
-                                        .setTitle("Eliminar vehículo")
-                                        .setMessage("¿Eliminar " + vehiculo.marca
-                                                + " " + vehiculo.modelo + "?")
-                                        .setPositiveButton("Eliminar", (dialog, which) -> {
-                                            new Thread(() -> {
-                                                db.vehiculoDAO().eliminar(vehiculo);
-                                                if (getActivity() != null) {
-                                                    getActivity().runOnUiThread(() -> {
-                                                        lista.remove(position);
-                                                        adapter.notifyItemRemoved(position);
-                                                        Toast.makeText(getContext(),
-                                                                "Vehículo eliminado",
-                                                                Toast.LENGTH_SHORT).show();
-                                                    });
-                                                }
-                                            }).start();
-                                        })
-                                        .setNegativeButton("Cancelar", null)
-                                        .show();
+
+                                // 1. Primero consultamos a la base de datos en segundo plano si el vehículo está en uso
+                                new Thread(() -> {
+                                    // Contamos cuántos alquileres están usando el ID de este auto
+                                    int alquileresActivos = db.vehiculoDAO().contarAlquileresDeVehiculo(vehiculo.getID_Auto());
+
+                                    // 2. Regresamos al hilo de la interfaz gráfica para tomar una decisión
+                                    if (getActivity() != null) {
+                                        getActivity().runOnUiThread(() -> {
+
+                                            if (alquileresActivos > 0) {
+                                                // BLOQUEO: El vehículo tiene llaves foráneas registradas
+                                                new AlertDialog.Builder(requireContext())
+                                                        .setTitle("No se puede eliminar")
+                                                        .setMessage("Este vehículo está asignado a " + alquileresActivos + " registro(s) de alquiler. Debes eliminar primero esos registros para poder borrar el vehículo.")
+                                                        .setPositiveButton("Aceptar", null)
+                                                        .show();
+
+                                            } else {
+                                                // SEGURO: No hay alquileres que usen ese auto
+                                                new AlertDialog.Builder(requireContext())
+                                                        .setTitle("Eliminar vehículo")
+                                                        .setMessage("¿Eliminar " + vehiculo.getMarca() + " " + vehiculo.getModelo() + "?") // (Ajustado con getters por consistencia)
+                                                        .setPositiveButton("Eliminar", (dialog, which) -> {
+
+                                                            new Thread(() -> {
+                                                                db.vehiculoDAO().eliminar(vehiculo); // Usa tu método 'eliminar' existente
+
+                                                                if (getActivity() != null) {
+                                                                    getActivity().runOnUiThread(() -> {
+                                                                        lista.remove(position);
+                                                                        adapter.notifyItemRemoved(position);
+
+                                                                        Toast.makeText(getContext(),
+                                                                                "Vehículo eliminado",
+                                                                                Toast.LENGTH_SHORT).show();
+                                                                    });
+                                                                }
+                                                            }).start();
+                                                        })
+                                                        .setNegativeButton("Cancelar", null)
+                                                        .show();
+                                            }
+
+                                        });
+                                    }
+                                }).start();
                             },
 
                            //Editar
