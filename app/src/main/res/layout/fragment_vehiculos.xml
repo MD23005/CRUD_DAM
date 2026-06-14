@@ -5,11 +5,22 @@
     android:layout_height="match_parent"
     android:background="#0B1320">
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1A2540"
+        app:iconifiedByDefault="false"
+        app:queryHint="Buscar vehículo..."
+        app:queryBackground="@null"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerVehiculos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/searchView"
         android:padding="8dp" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAgregar"

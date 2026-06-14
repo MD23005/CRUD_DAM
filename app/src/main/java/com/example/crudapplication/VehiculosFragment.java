@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,12 +30,6 @@ public class VehiculosFragment extends Fragment {
 
     public VehiculosFragment() {}
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        cargarVehiculos();
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -48,6 +43,19 @@ public class VehiculosFragment extends Fragment {
         recyclerVehiculos = vista.findViewById(R.id.recyclerVehiculos);
         recyclerVehiculos.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // SearchView del layout
+        SearchView searchView = vista.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) { return false; }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (adapter != null) adapter.filtrar(newText);
+                return true;
+            }
+        });
+
         FloatingActionButton fabAgregar = vista.findViewById(R.id.fabAgregar);
         fabAgregar.setOnClickListener(v -> {
             AgregarVehiculoDialog dialogo = new AgregarVehiculoDialog(() -> cargarVehiculos());
@@ -57,86 +65,86 @@ public class VehiculosFragment extends Fragment {
         return vista;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarVehiculos();
+    }
+
     private void cargarVehiculos() {
         new Thread(() -> {
             lista = db.vehiculoDAO().obtenerTodos();
 
+            if (lista == null) {
+                lista = new java.util.ArrayList<>();
+            }
+
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
 
-                    adapter = new VehiculoAdapter(
-                            lista,
-                            requireContext(),
+                    if (adapter == null) {
+                        adapter = new VehiculoAdapter(
+                                lista,
+                                requireContext(),
 
-                            // Detalle
-                            (marca, modelo, año, placa, tipo_vehiculo, precio, estado, foto) -> {
-                                Toast.makeText(getContext(),
-                                        marca + " " + modelo,
-                                        Toast.LENGTH_SHORT).show();
-                            },
+                                (marca, modelo, año, placa, tipo_vehiculo, precio, estado, foto) -> {
+                                    Toast.makeText(getContext(),
+                                            marca + " " + modelo,
+                                            Toast.LENGTH_SHORT).show();
+                                },
 
-                            // Eliminar
-                            (vehiculo, position) -> {
+                                (vehiculo, position) -> {
+                                    new Thread(() -> {
+                                        int alquileresActivos = db.vehiculoDAO().contarAlquileresDeVehiculo(vehiculo.getID_Auto());
 
-                                // 1. Primero consultamos a la base de datos en segundo plano si el vehículo está en uso
-                                new Thread(() -> {
-                                    // Contamos cuántos alquileres están usando el ID de este auto
-                                    int alquileresActivos = db.vehiculoDAO().contarAlquileresDeVehiculo(vehiculo.getID_Auto());
+                                        if (getActivity() != null) {
+                                            getActivity().runOnUiThread(() -> {
+                                                if (alquileresActivos > 0) {
+                                                    new AlertDialog.Builder(requireContext())
+                                                            .setTitle("No se puede eliminar")
+                                                            .setMessage("Este vehículo está asignado a " + alquileresActivos + " registro(s) de alquiler. Debes eliminar primero esos registros para poder borrar el vehículo.")
+                                                            .setPositiveButton("Aceptar", null)
+                                                            .show();
+                                                } else {
+                                                    new AlertDialog.Builder(requireContext())
+                                                            .setTitle("Eliminar vehículo")
+                                                            .setMessage("¿Eliminar " + vehiculo.getMarca() + " " + vehiculo.getModelo() + "?")
+                                                            .setPositiveButton("Eliminar", (dialog, which) -> {
+                                                                new Thread(() -> {
+                                                                    db.vehiculoDAO().eliminar(vehiculo);
+                                                                    if (getActivity() != null) {
+                                                                        getActivity().runOnUiThread(() -> {
+                                                                            lista.remove(position);
+                                                                            adapter.notifyItemRemoved(position);
+                                                                            Toast.makeText(getContext(),
+                                                                                    "Vehículo eliminado",
+                                                                                    Toast.LENGTH_SHORT).show();
+                                                                        });
+                                                                    }
+                                                                }).start();
+                                                            })
+                                                            .setNegativeButton("Cancelar", null)
+                                                            .show();
+                                                }
+                                            });
+                                        }
+                                    }).start();
+                                },
 
-                                    // 2. Regresamos al hilo de la interfaz gráfica para tomar una decisión
-                                    if (getActivity() != null) {
-                                        getActivity().runOnUiThread(() -> {
+                                (vehiculo) -> {
+                                    EditarVehiculoDialog dialogo = EditarVehiculoDialog.newInstance(
+                                            vehiculo,
+                                            () -> cargarVehiculos()
+                                    );
+                                    dialogo.show(getChildFragmentManager(), "EditarVehiculoDialog");
+                                }
+                        );
 
-                                            if (alquileresActivos > 0) {
-                                                // BLOQUEO: El vehículo tiene llaves foráneas registradas
-                                                new AlertDialog.Builder(requireContext())
-                                                        .setTitle("No se puede eliminar")
-                                                        .setMessage("Este vehículo está asignado a " + alquileresActivos + " registro(s) de alquiler. Debes eliminar primero esos registros para poder borrar el vehículo.")
-                                                        .setPositiveButton("Aceptar", null)
-                                                        .show();
+                        recyclerVehiculos.setAdapter(adapter);
 
-                                            } else {
-                                                // SEGURO: No hay alquileres que usen ese auto
-                                                new AlertDialog.Builder(requireContext())
-                                                        .setTitle("Eliminar vehículo")
-                                                        .setMessage("¿Eliminar " + vehiculo.getMarca() + " " + vehiculo.getModelo() + "?") // (Ajustado con getters por consistencia)
-                                                        .setPositiveButton("Eliminar", (dialog, which) -> {
-
-                                                            new Thread(() -> {
-                                                                db.vehiculoDAO().eliminar(vehiculo); // Usa tu método 'eliminar' existente
-
-                                                                if (getActivity() != null) {
-                                                                    getActivity().runOnUiThread(() -> {
-                                                                        lista.remove(position);
-                                                                        adapter.notifyItemRemoved(position);
-
-                                                                        Toast.makeText(getContext(),
-                                                                                "Vehículo eliminado",
-                                                                                Toast.LENGTH_SHORT).show();
-                                                                    });
-                                                                }
-                                                            }).start();
-                                                        })
-                                                        .setNegativeButton("Cancelar", null)
-                                                        .show();
-                                            }
-
-                                        });
-                                    }
-                                }).start();
-                            },
-
-                           //Editar
-                            (vehiculo) -> {
-                                EditarVehiculoDialog dialogo = EditarVehiculoDialog.newInstance(
-                                        vehiculo,
-                                        () -> cargarVehiculos()
-                                );
-                                dialogo.show(getChildFragmentManager(), "EditarVehiculoDialog");
-                            }
-                    );
-
-                    recyclerVehiculos.setAdapter(adapter);
+                    } else {
+                        adapter.actualizarLista(lista);
+                    }
                 });
             }
         }).start();

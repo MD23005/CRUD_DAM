@@ -1,6 +1,8 @@
 package com.example.crudapplication;
 
 import android.os.Bundle;
+import android.view.Menu;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -8,12 +10,23 @@ import com.example.crudapplication.HomeFragment;
 import com.example.crudapplication.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
 public class MainActivity extends AppCompatActivity {
+    public Menu mainMenu;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mainMenu = menu;
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
 
