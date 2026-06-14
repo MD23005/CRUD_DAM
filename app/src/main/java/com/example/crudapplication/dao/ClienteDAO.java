@@ -30,4 +30,12 @@ public interface ClienteDAO {
 
     @Query("SELECT COUNT(*) FROM AlquilarVehiculo WHERE ID_Cliente = :idCliente")
     int contarAlquileresDeCliente(int idCliente);
+
+    @Query("SELECT * FROM Cliente " +
+            "WHERE nombre LIKE :texto " +
+            "OR dui LIKE :texto " +
+            "OR telefono LIKE :texto " +
+            "OR Correo_Electronico  LIKE :texto")
+    List<Cliente> buscarClientes(String texto);
+
 }
